@@ -1,12 +1,20 @@
 import type { ReactNode } from "react";
 import {
   Outlet,
-  createRootRoute,
   HeadContent,
   Scripts,
+  createRootRouteWithContext,
 } from "@tanstack/react-router";
+import { QueryClient } from "@tanstack/react-query";
+import { authQueries } from "~/lib/queries";
 
-export const Route = createRootRoute({
+import appCss from "~/styles/app.css?url";
+
+interface RootContext {
+  queryClient: QueryClient;
+}
+
+export const Route = createRootRouteWithContext<RootContext>()({
   head: () => ({
     meta: [
       {
@@ -20,7 +28,20 @@ export const Route = createRootRoute({
         title: "SK Carpentry Admin",
       },
     ],
+    links: [
+      {
+        rel: "stylesheet",
+        href: appCss,
+      },
+    ],
   }),
+  beforeLoad: async ({ context }) => {
+    const userSession = await context.queryClient.ensureQueryData(
+      authQueries.user()
+    );
+
+    return { userSession };
+  },
   component: RootComponent,
 });
 
