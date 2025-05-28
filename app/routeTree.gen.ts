@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as appIndexImport } from './routes/(app)/index'
 import { Route as authSignUpImport } from './routes/(auth)/sign-up'
 import { Route as authSignInImport } from './routes/(auth)/sign-in'
+import { Route as appDashboardImport } from './routes/(app)/dashboard'
 
 // Create/Update Routes
 
@@ -35,10 +36,23 @@ const authSignInRoute = authSignInImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const appDashboardRoute = appDashboardImport.update({
+  id: '/(app)/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/(app)/dashboard': {
+      id: '/(app)/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof appDashboardImport
+      parentRoute: typeof rootRoute
+    }
     '/(auth)/sign-in': {
       id: '/(auth)/sign-in'
       path: '/sign-in'
@@ -66,12 +80,14 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
+  '/dashboard': typeof appDashboardRoute
   '/sign-in': typeof authSignInRoute
   '/sign-up': typeof authSignUpRoute
   '/': typeof appIndexRoute
 }
 
 export interface FileRoutesByTo {
+  '/dashboard': typeof appDashboardRoute
   '/sign-in': typeof authSignInRoute
   '/sign-up': typeof authSignUpRoute
   '/': typeof appIndexRoute
@@ -79,6 +95,7 @@ export interface FileRoutesByTo {
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
+  '/(app)/dashboard': typeof appDashboardRoute
   '/(auth)/sign-in': typeof authSignInRoute
   '/(auth)/sign-up': typeof authSignUpRoute
   '/(app)/': typeof appIndexRoute
@@ -86,20 +103,27 @@ export interface FileRoutesById {
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/sign-in' | '/sign-up' | '/'
+  fullPaths: '/dashboard' | '/sign-in' | '/sign-up' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/sign-in' | '/sign-up' | '/'
-  id: '__root__' | '/(auth)/sign-in' | '/(auth)/sign-up' | '/(app)/'
+  to: '/dashboard' | '/sign-in' | '/sign-up' | '/'
+  id:
+    | '__root__'
+    | '/(app)/dashboard'
+    | '/(auth)/sign-in'
+    | '/(auth)/sign-up'
+    | '/(app)/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
+  appDashboardRoute: typeof appDashboardRoute
   authSignInRoute: typeof authSignInRoute
   authSignUpRoute: typeof authSignUpRoute
   appIndexRoute: typeof appIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  appDashboardRoute: appDashboardRoute,
   authSignInRoute: authSignInRoute,
   authSignUpRoute: authSignUpRoute,
   appIndexRoute: appIndexRoute,
@@ -115,10 +139,14 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/(app)/dashboard",
         "/(auth)/sign-in",
         "/(auth)/sign-up",
         "/(app)/"
       ]
+    },
+    "/(app)/dashboard": {
+      "filePath": "(app)/dashboard.tsx"
     },
     "/(auth)/sign-in": {
       "filePath": "(auth)/sign-in.tsx"

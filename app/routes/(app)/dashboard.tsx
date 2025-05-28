@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import LogoutButton from "~/components/LogoutButton";
 
-export const Route = createFileRoute("/(app)/")({
+export const Route = createFileRoute("/(app)/dashboard")({
   beforeLoad: async ({ context }) => {
     if (!context.userSession) throw redirect({ to: "/sign-in" });
   },
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/(app)/")({
 function RouteComponent() {
   return (
     <>
-      <div>Hello "/(app)/"!</div>
+      <div>Hello "/(app)/dashboard"!</div>
       <LogoutButton />
     </>
   );

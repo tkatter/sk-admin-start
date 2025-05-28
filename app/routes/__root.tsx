@@ -5,10 +5,19 @@ import {
   Scripts,
   createRootRouteWithContext,
 } from "@tanstack/react-router";
-import { QueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { authQueries } from "~/lib/queries";
 
 import appCss from "~/styles/app.css?url";
+import { auth } from "~/lib/auth/auth";
+import { Toaster } from "~/components/ui/sonner";
 
 interface RootContext {
   queryClient: QueryClient;
@@ -46,10 +55,13 @@ export const Route = createRootRouteWithContext<RootContext>()({
 });
 
 function RootComponent() {
+  const { queryClient } = Route.useRouteContext();
   return (
-    <RootDocument>
-      <Outlet />
-    </RootDocument>
+    <QueryClientProvider client={queryClient}>
+      <RootDocument>
+        <Outlet />
+      </RootDocument>
+    </QueryClientProvider>
   );
 }
 
@@ -61,6 +73,9 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       </head>
       <body>
         {children}
+        <Toaster richColors position="top-right" />
+        <TanStackRouterDevtools />
+        <ReactQueryDevtools initialIsOpen={false} />
         <Scripts />
       </body>
     </html>
