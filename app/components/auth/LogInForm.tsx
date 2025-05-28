@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { authClient } from "~/lib/auth/auth-client";
-import { LoadingSpinnerMini } from "./ui/LoadingSpinner";
+import { LoadingSpinnerMini } from "../ui/LoadingSpinner";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -23,7 +23,7 @@ const signIn = async (data: SignInFormSchema) => {
   const { error, data: response } = await authClient.signIn.email({
     email,
     password,
-    callbackURL: "/dashboard",
+    // callbackURL: "/",
   });
 
   if (error) throw new Error(error.message);
@@ -52,8 +52,10 @@ function LoginForm() {
     mutationFn: signIn,
     onSuccess: (response) => {
       queryClient.resetQueries();
-      navigate({ to: "/dashboard" });
-      toast.success(`Hey ${response.user.name}, welcome back!`);
+      navigate({ to: "/", from: "/sign-in" });
+      toast.success(
+        `Welcome back ${response.user.name.split(" ")[0].toUpperCase()}!`
+      );
     },
   });
 

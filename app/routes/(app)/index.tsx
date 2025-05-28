@@ -1,18 +1,22 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import LogoutButton from "~/components/LogoutButton";
+import { createFileRoute } from "@tanstack/react-router";
+// import { RadarDash } from "~/components/dashboard/Radar";
+// import { LineDash } from "~/components/dashboard/LineChart";
+// import LogoutButton from "~/components/LogoutButton";
 
 export const Route = createFileRoute("/(app)/")({
-  beforeLoad: async ({ context }) => {
-    if (!context.userSession) throw redirect({ to: "/sign-in" });
-  },
-  component: RouteComponent,
+  component: Home,
 });
 
-function RouteComponent() {
+function Home() {
   return (
     <>
-      <div>Hello "/(app)/"!</div>
-      <LogoutButton />
+      <div className="grid auto-rows-min gap-4 md:grid-cols-4">
+        <div className="rounded-xl bg-muted/50">{/* <RadarDash /> */}</div>
+        <div className="rounded-xl bg-muted/50">{/* <LineDash /> */}</div>
+        <div className="rounded-xl bg-muted/50" />
+        <div className="rounded-xl bg-muted/50" />
+      </div>
+      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
     </>
   );
 }

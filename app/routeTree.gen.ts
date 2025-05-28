@@ -11,17 +11,23 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as appRouteImport } from './routes/(app)/route'
 import { Route as appIndexImport } from './routes/(app)/index'
 import { Route as authSignUpImport } from './routes/(auth)/sign-up'
 import { Route as authSignInImport } from './routes/(auth)/sign-in'
-import { Route as appDashboardImport } from './routes/(app)/dashboard'
+import { Route as appScheduleIndexImport } from './routes/(app)/schedule/index'
 
 // Create/Update Routes
 
-const appIndexRoute = appIndexImport.update({
-  id: '/(app)/',
-  path: '/',
+const appRouteRoute = appRouteImport.update({
+  id: '/(app)',
   getParentRoute: () => rootRoute,
+} as any)
+
+const appIndexRoute = appIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => appRouteRoute,
 } as any)
 
 const authSignUpRoute = authSignUpImport.update({
@@ -36,21 +42,21 @@ const authSignInRoute = authSignInImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const appDashboardRoute = appDashboardImport.update({
-  id: '/(app)/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRoute,
+const appScheduleIndexRoute = appScheduleIndexImport.update({
+  id: '/schedule/',
+  path: '/schedule/',
+  getParentRoute: () => appRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/(app)/dashboard': {
-      id: '/(app)/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof appDashboardImport
+    '/(app)': {
+      id: '/(app)'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof appRouteImport
       parentRoute: typeof rootRoute
     }
     '/(auth)/sign-in': {
@@ -72,61 +78,82 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof appIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof appRouteImport
+    }
+    '/(app)/schedule/': {
+      id: '/(app)/schedule/'
+      path: '/schedule'
+      fullPath: '/schedule'
+      preLoaderRoute: typeof appScheduleIndexImport
+      parentRoute: typeof appRouteImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface appRouteRouteChildren {
+  appIndexRoute: typeof appIndexRoute
+  appScheduleIndexRoute: typeof appScheduleIndexRoute
+}
+
+const appRouteRouteChildren: appRouteRouteChildren = {
+  appIndexRoute: appIndexRoute,
+  appScheduleIndexRoute: appScheduleIndexRoute,
+}
+
+const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
+  appRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
-  '/dashboard': typeof appDashboardRoute
+  '/': typeof appIndexRoute
   '/sign-in': typeof authSignInRoute
   '/sign-up': typeof authSignUpRoute
-  '/': typeof appIndexRoute
+  '/schedule': typeof appScheduleIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/dashboard': typeof appDashboardRoute
   '/sign-in': typeof authSignInRoute
   '/sign-up': typeof authSignUpRoute
   '/': typeof appIndexRoute
+  '/schedule': typeof appScheduleIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/(app)/dashboard': typeof appDashboardRoute
+  '/(app)': typeof appRouteRouteWithChildren
   '/(auth)/sign-in': typeof authSignInRoute
   '/(auth)/sign-up': typeof authSignUpRoute
   '/(app)/': typeof appIndexRoute
+  '/(app)/schedule/': typeof appScheduleIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/dashboard' | '/sign-in' | '/sign-up' | '/'
+  fullPaths: '/' | '/sign-in' | '/sign-up' | '/schedule'
   fileRoutesByTo: FileRoutesByTo
-  to: '/dashboard' | '/sign-in' | '/sign-up' | '/'
+  to: '/sign-in' | '/sign-up' | '/' | '/schedule'
   id:
     | '__root__'
-    | '/(app)/dashboard'
+    | '/(app)'
     | '/(auth)/sign-in'
     | '/(auth)/sign-up'
     | '/(app)/'
+    | '/(app)/schedule/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  appDashboardRoute: typeof appDashboardRoute
+  appRouteRoute: typeof appRouteRouteWithChildren
   authSignInRoute: typeof authSignInRoute
   authSignUpRoute: typeof authSignUpRoute
-  appIndexRoute: typeof appIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  appDashboardRoute: appDashboardRoute,
+  appRouteRoute: appRouteRouteWithChildren,
   authSignInRoute: authSignInRoute,
   authSignUpRoute: authSignUpRoute,
-  appIndexRoute: appIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -139,14 +166,17 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/(app)/dashboard",
+        "/(app)",
         "/(auth)/sign-in",
-        "/(auth)/sign-up",
-        "/(app)/"
+        "/(auth)/sign-up"
       ]
     },
-    "/(app)/dashboard": {
-      "filePath": "(app)/dashboard.tsx"
+    "/(app)": {
+      "filePath": "(app)/route.tsx",
+      "children": [
+        "/(app)/",
+        "/(app)/schedule/"
+      ]
     },
     "/(auth)/sign-in": {
       "filePath": "(auth)/sign-in.tsx"
@@ -155,7 +185,12 @@ export const routeTree = rootRoute
       "filePath": "(auth)/sign-up.tsx"
     },
     "/(app)/": {
-      "filePath": "(app)/index.tsx"
+      "filePath": "(app)/index.tsx",
+      "parent": "/(app)"
+    },
+    "/(app)/schedule/": {
+      "filePath": "(app)/schedule/index.tsx",
+      "parent": "/(app)"
     }
   }
 }

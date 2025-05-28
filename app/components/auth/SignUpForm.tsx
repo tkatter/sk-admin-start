@@ -59,7 +59,7 @@ function SignUpForm() {
 
       queryClient.resetQueries();
       router.invalidate();
-      navigate({ to: "/dashboard" });
+      navigate({ to: "/", from: "/sign-up" });
     },
     onError: (error) => {
       toast.error(`Sign up failed: ${error.message}`);
