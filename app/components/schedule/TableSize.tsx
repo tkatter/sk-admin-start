@@ -1,5 +1,6 @@
-import { useState } from "react";
 import type { ScheduleTableProps } from "~/components/schedule/ScheduleTable";
+
+import { useState } from "react";
 import {
   Select,
   SelectContent,

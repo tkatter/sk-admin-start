@@ -3,11 +3,7 @@ import { formOptions } from "@tanstack/react-form";
 import { UserSignIn, UserSignUp } from "../types/form-types";
 
 export const signUpFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, { message: "Name must be > 2 characters" })
-    .trim()
-    .toLowerCase(),
+  name: z.string("Name is required").trim().toLowerCase(),
   email: z.email("Invalid email").trim().toLowerCase(),
   password: z.string().min(8, "Password must be > 8 characters"),
 });

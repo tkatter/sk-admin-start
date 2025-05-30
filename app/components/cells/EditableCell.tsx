@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
 import type { Column, Getter, Row } from "@tanstack/react-table";
-import type { FormattedScheduleItems } from "~/lib/types/schedule-types";
+import type { ScheduleItem } from "~/lib/types/schedule-types";
+
+import { useRef, useState } from "react";
 import { Input } from "~/components/ui/input";
 import { useSchedule } from "~/context/ScheduleContext";
 
@@ -10,8 +11,8 @@ export default function EditableCell({
   row,
 }: {
   getValue: Getter<string>;
-  column: Column<FormattedScheduleItems, string>;
-  row: Row<FormattedScheduleItems>;
+  column: Column<ScheduleItem, string>;
+  row: Row<ScheduleItem>;
 }) {
   const { updateDbFromLocal } = useSchedule();
   const inputRef = useRef<HTMLInputElement>(null);

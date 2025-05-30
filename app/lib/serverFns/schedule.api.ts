@@ -1,12 +1,17 @@
+import { createMiddleware, createServerFn } from "@tanstack/react-start";
 import type {
-  AllScheduleItems,
+  // AllScheduleItems,
   ApiRes,
   ApiResWithData,
   FormattedScheduleItems,
   ScheduleItem,
   UpdatedScheduleItem,
 } from "~/lib/types/schedule-types";
+import { db } from "../db/db";
+import { asc } from "drizzle-orm";
+import { scheduleTable } from "../db/schema/schedule";
 
+/*
 export const getAllScheduleItems = async (): Promise<
   Array<FormattedScheduleItems>
 > => {
@@ -39,6 +44,7 @@ export const getAllScheduleItems = async (): Promise<
     throw error;
   }
 };
+*/
 
 /**
  * Creates a new schedule item in the database
@@ -122,3 +128,14 @@ export const deleteScheduleItems = async (
     throw err;
   }
 };
+
+export const getAllScheduleItems = createServerFn({
+  method: "GET",
+  response: "data",
+}).handler(async () => {
+  const res = await db.query.scheduleTable.findMany({
+    orderBy: [asc(scheduleTable.startDate)],
+  });
+
+  return res;
+});

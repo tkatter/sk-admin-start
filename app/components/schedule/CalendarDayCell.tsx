@@ -1,11 +1,12 @@
+import type { ScheduleItem } from "~/lib/types/schedule-types";
 import { add, getDate } from "date-fns";
 import { Link } from "@tanstack/react-router";
-import type { FormattedScheduleItems } from "~/lib/types/schedule-types";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "~/components/ui/hover-card";
+import { getMapsUrl } from "~/lib/utils";
 
 interface CalendarDayCellProps {
   day: number;
@@ -14,8 +15,8 @@ interface CalendarDayCellProps {
   offsetStart: number | Date;
   currentDate?: number;
   firstDayInMonth: Date;
-  getEventsForDay: (date: Date) => Array<FormattedScheduleItems>;
-  getEventTypeColor: (status: FormattedScheduleItems["status"]) => string;
+  getEventsForDay: (date: Date) => Array<ScheduleItem>;
+  getEventTypeColor: (status: ScheduleItem["status"]) => string;
   type: "past" | "current" | "future" | "today";
 }
 
@@ -101,28 +102,31 @@ export function CalendarDayCell({
  * @param event
  * @returns
  */
-function EventHoverCard({ event }: { event: FormattedScheduleItems }) {
-  const {
-    location: { address, city, state, zip },
-  } = event;
-  const formattedAddress = `${address} ${city} ${state.toUpperCase()}, ${zip}`;
+function EventHoverCard({ event }: { event: ScheduleItem }) {
+  let mapUrl: URL | null = null;
+  let formattedAddress: string | null = null;
 
-  const mapUrl = new URL("https://www.google.com/maps/search/?api=1&");
-  mapUrl.search = "api=1&query=" + formattedAddress;
+  if (event.location !== null) {
+    const [url, address] = getMapsUrl(event.location);
+    mapUrl = url;
+    formattedAddress = address;
+  }
 
   return (
     <>
       <ul>
         <li className="mb-2 capitalize">{event.name}</li>
-        <li className="text-sm">
-          <Link
-            to={mapUrl.toString()}
-            target="_blank"
-            className="underline decoration-accent-foreground"
-          >
-            {formattedAddress}
-          </Link>
-        </li>
+        {mapUrl !== null && formattedAddress !== null && (
+          <li className="text-sm">
+            <Link
+              to={mapUrl.toString()}
+              target="_blank"
+              className="underline decoration-accent-foreground"
+            >
+              {formattedAddress}
+            </Link>
+          </li>
+        )}
       </ul>
     </>
   );

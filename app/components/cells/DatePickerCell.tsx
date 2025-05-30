@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import type { Column, Getter, Row } from "@tanstack/react-table";
-import type { FormattedScheduleItems } from "~/lib/types/schedule-types";
+import type { ScheduleItem } from "~/lib/types/schedule-types";
 import {
   Popover,
   PopoverContent,
@@ -16,8 +16,8 @@ import { useSchedule } from "~/context/ScheduleContext";
 
 interface DatePickerCellProps {
   getValue: Getter<Date>;
-  row: Row<FormattedScheduleItems>;
-  column: Column<FormattedScheduleItems, Date>;
+  row: Row<ScheduleItem>;
+  column: Column<ScheduleItem, Date>;
 }
 
 export default function DatePickerCell({

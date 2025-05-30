@@ -7,16 +7,13 @@ import {
   SelectValue,
 } from "../ui/select";
 import type { Column, Getter, Row } from "@tanstack/react-table";
-import type {
-  FormattedScheduleItems,
-  Status,
-} from "~/lib/types/schedule-types";
+import type { ScheduleItem, Status } from "~/lib/types/schedule-types";
 import { useSchedule } from "~/context/ScheduleContext";
 
 interface DropDownCellProps {
   getValue: Getter<Status>;
-  row: Row<FormattedScheduleItems>;
-  column: Column<FormattedScheduleItems, Status>;
+  row: Row<ScheduleItem>;
+  column: Column<ScheduleItem, Status>;
 }
 
 export default function DropDownCell({

@@ -7,15 +7,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import AddItemDialog from "~/components/schedule/AddItemDialog";
+import Calendar from "~/components/schedule/Calendar";
+import DeleteSelectedButton from "~/components/schedule/DeleteSelectedButton";
 import ScheduleTable from "~/components/schedule/ScheduleTable";
 import { FilterInput, FilterPopover } from "~/components/schedule/TableFilters";
-import { columns } from "~/lib/schedule-columns";
-import { useSchedule } from "~/context/ScheduleContext";
-import DeleteSelectedButton from "~/components/schedule/DeleteSelectedButton";
-import { Button } from "~/components/ui/button";
 import TablePagination from "~/components/schedule/TablePagination";
 import TableSize from "~/components/schedule/TableSize";
-import Calendar from "~/components/schedule/Calendar";
+import { useSchedule } from "~/context/ScheduleContext";
+import { Button } from "~/components/ui/button";
+import { columns } from "~/lib/schedule-columns";
 
 export type Filter = {
   id: string;
@@ -48,9 +48,9 @@ function SchedulePage() {
         location: true,
       },
     },
-    // debugTable: true,
+    debugTable: true,
     state: { columnFilters, rowSelection, pagination },
-    getRowId: (row) => row.id,
+    getRowId: (row) => row.id.toString(),
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),

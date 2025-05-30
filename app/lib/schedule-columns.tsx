@@ -1,25 +1,23 @@
-import { createColumnHelper } from "@tanstack/react-table";
 import type { CheckedState } from "@radix-ui/react-checkbox";
 import type { Row, Table } from "@tanstack/react-table";
-import type {
-  FormattedScheduleItems,
-  Status,
-} from "~/lib/types/schedule-types";
-import type { Location } from "~/lib/utils";
+import type { ScheduleItem, Status } from "~/lib/types/schedule-types";
 import type { HeaderCellProps } from "~/components/cells/HeaderCell";
-import DatePickerCell from "~/components/cells/DatePickerCell";
-import DropDownCell from "~/components/cells/DropDownCell";
-import EditableCell from "~/components/cells/EditableCell";
-import { Checkbox } from "~/components/ui/checkbox";
-import HeaderCell from "~/components/cells/HeaderCell";
-import { formatLocation } from "~/lib/utils";
 
-const columnHelper = createColumnHelper<FormattedScheduleItems>();
+import { Link } from "@tanstack/react-router";
+import { createColumnHelper } from "@tanstack/react-table";
+import DatePickerCell from "~/components/cells/DatePickerCell";
+import EditableCell from "~/components/cells/EditableCell";
+import HeaderCell from "~/components/cells/HeaderCell";
+import { Badge } from "~/components/ui/badge";
+import { Checkbox } from "~/components/ui/checkbox";
+import { formatLocation, getMapsUrl } from "~/lib/utils";
+
+const columnHelper = createColumnHelper<ScheduleItem>();
 
 export const columns = [
   {
     id: "select-col",
-    header: ({ table }: { table: Table<FormattedScheduleItems> }) => (
+    header: ({ table }: { table: Table<ScheduleItem> }) => (
       <div className="flex items-center justify-center">
         <Checkbox
           className="size-5 p-0 m-0"
@@ -31,7 +29,7 @@ export const columns = [
         />
       </div>
     ),
-    cell: ({ row }: { row: Row<FormattedScheduleItems> }) => (
+    cell: ({ row }: { row: Row<ScheduleItem> }) => (
       <div className="flex items-center justify-center">
         <Checkbox
           className="size-5 p-0 m-0 "
@@ -45,11 +43,13 @@ export const columns = [
     size: 30,
   },
   columnHelper.accessor("id", {
-    header: (props) => {
-      const newProps: HeaderCellProps<string> = { ...props, headerValue: "ID" };
-      return HeaderCell<string>(newProps);
-    },
+    // header: (props) => {
+    //   const newProps: HeaderCellProps<string> = { ...props, headerValue: "ID" };
+    //   return HeaderCell<string>(newProps);
+    // },
     cell: (props) => <p>{props.getValue()}</p>,
+    enableHiding: true,
+    meta: { hidden: true },
   }),
   columnHelper.accessor("name", {
     header: (props) => {
@@ -92,50 +92,39 @@ export const columns = [
       };
       return HeaderCell<Status>(newProps);
     },
-    cell: DropDownCell,
+    // cell: DropDownCell,
+    cell: (props) => (
+      <div className="flex items-center justify-center capitalize">
+        <Badge>{props.getValue()}</Badge>
+      </div>
+    ),
     enableColumnFilter: true,
     filterFn: "equalsString",
     enableSorting: false,
   }),
-  // columnHelper.accessor('location', {
-  //   header: (props) => {
-  //     const newProps: HeaderCellProps<Location> = {
-  //       ...props,
-  //       headerValue: 'Location',
-  //     }
-  //     return HeaderCell<Location>(newProps)
-  //   },
-  //   cell: (props) => (
-  //     <div className="px-2 capitalize">
-  //       <p>{`${props.getValue().address} ${props.getValue().city} ${props.getValue().state}, ${props.getValue().zip}`}</p>
-  //     </div>
-  //   ),
-  //   enableSorting: false,
-  // }),
   columnHelper.accessor((row) => formatLocation(row.location), {
     id: "location",
     header: "Location",
-    cell: (info) => {
-      const location = info.row.original.location;
+    cell: (props) => {
+      const location = props.row.original.location;
+      if (!location)
+        return (
+          <div className="px-4">
+            <div>{formatLocation(location)}</div>
+          </div>
+        );
+
+      const [mapsUrl, formattedAddress] = getMapsUrl(location);
+
       return (
-        <div className="max-w-xs">
-          <div className="truncate">{formatLocation(location)}</div>
-          {/* Optional: Show individual parts on hover */}
-          {location && (
-            <div className="text-xs text-muted-foreground">
-              {location.city}, {location.state}
-            </div>
-          )}
+        <div className="px-4">
+          <Link to={mapsUrl.toString()} target="_blank" className="capitalize">
+            {formattedAddress}
+          </Link>
         </div>
       );
     },
     filterFn: "includesString",
-  }),
-  columnHelper.accessor((row) => row.location?.city, {
-    id: "city",
-    header: "City",
-    // Hide this column but make it available for filtering
-    enableHiding: true,
-    meta: { hidden: true },
+    enableColumnFilter: true,
   }),
 ];

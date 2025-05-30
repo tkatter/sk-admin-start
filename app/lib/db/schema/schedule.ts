@@ -1,6 +1,6 @@
 import type { BidSelect } from "~/lib/db/schema/bid";
+import type { Location } from "~/lib/types/schedule-types";
 
-import { bids } from "~/lib/db/schema/bid";
 import { relations } from "drizzle-orm";
 import { json } from "drizzle-orm/pg-core";
 import {
@@ -12,6 +12,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { bids } from "~/lib/db/schema/bid";
 
 export const statusEnum = pgEnum("status", [
   "pending",
@@ -28,15 +29,6 @@ export const eventTypeEnum = pgEnum("event_type", [
   "appointment",
 ]);
 
-export interface Location {
-  city?: string;
-  formatted?: string;
-  state?: string;
-  zipCode?: string;
-  street?: string;
-  // Optional: formatted full address for display
-}
-
 export const scheduleTable = pgTable("schedule", {
   id: serial().primaryKey(),
   name: varchar({ length: 255 }).notNull(),
@@ -48,11 +40,6 @@ export const scheduleTable = pgTable("schedule", {
   eventType: eventTypeEnum("event_type").notNull().default("job"),
 
   location: json("location").$type<Location>(),
-
-  address: varchar({ length: 100 }),
-  city: varchar({ length: 100 }),
-  state: varchar({ length: 2 }),
-  zip: varchar({ length: 12 }),
 
   description: text(),
   notes: text(),

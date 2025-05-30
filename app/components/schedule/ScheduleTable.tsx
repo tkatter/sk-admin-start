@@ -1,6 +1,7 @@
-import { flexRender } from "@tanstack/react-table";
 import type { Table as TableType } from "@tanstack/react-table";
-import type { FormattedScheduleItems } from "~/lib/types/schedule-types";
+import type { ScheduleItem } from "~/lib/types/schedule-types";
+
+import { flexRender } from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -18,7 +19,7 @@ import { columns } from "~/lib/schedule-columns";
  */
 export interface ScheduleTableProps {
   /** TanStack table instance for managing schedule items */
-  table: TableType<FormattedScheduleItems>;
+  table: TableType<ScheduleItem>;
 }
 
 /**

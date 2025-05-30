@@ -8,6 +8,7 @@ export const Route = createFileRoute("/(app)/schedule/")({
   loader: async ({ context: { queryClient } }) => {
     await queryClient.prefetchQuery(scheduleQueries.getAllScheduleItemsOpts());
   },
+
   pendingComponent: LoadingSpinner,
   component: RouteComponent,
 });

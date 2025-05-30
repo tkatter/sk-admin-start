@@ -1,10 +1,10 @@
-import { ArrowDownUp, EyeOff, SortAsc, SortDesc } from "lucide-react";
 import type { HeaderContext } from "@tanstack/react-table";
-import type { FormattedScheduleItems } from "~/lib/types/schedule-types";
+import type { ScheduleItem } from "~/lib/types/schedule-types";
+
+import { ArrowDownUp, EyeOff, SortAsc, SortDesc } from "lucide-react";
 import { useSchedule } from "~/context/ScheduleContext";
 
-export interface HeaderCellProps<T>
-  extends HeaderContext<FormattedScheduleItems, T> {
+export interface HeaderCellProps<T> extends HeaderContext<ScheduleItem, T> {
   headerValue: string;
 }
 

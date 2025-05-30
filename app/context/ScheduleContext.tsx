@@ -1,9 +1,14 @@
 import { createContext, use, useEffect, useReducer, useState } from "react";
 import { toast } from "sonner";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import type { PaginationState, RowSelectionState } from "@tanstack/react-table";
 import type { UseMutateFunction } from "@tanstack/react-query";
-import type { FormattedScheduleItems } from "~/lib/types/schedule-types";
+import type { ScheduleItem } from "~/lib/types/schedule-types";
 import type { Filter } from "~/routes/(app)/schedule/-pages/SchedulePage";
 import { scheduleQueries } from "~/lib/queries";
 import { scheduleMutations } from "~/lib/queries";
@@ -33,7 +38,7 @@ interface ScheduleContextType extends InitialStateType {
  * Initial state type for the Schedule Context
  */
 interface InitialStateType {
-  data: Array<FormattedScheduleItems> | [];
+  data: Array<ScheduleItem> | [];
   columnFilters: Array<Filter> | [];
   isHidden: boolean;
 }
@@ -42,7 +47,7 @@ interface InitialStateType {
  * Union type for all possible dispatch actions in the Schedule Context
  */
 type MYDispatch =
-  | { type: "syncDbToTable"; payload: Array<FormattedScheduleItems> }
+  | { type: "syncDbToTable"; payload: Array<ScheduleItem> }
   | { type: "filterChange"; payload: Filter }
   | { type: "clearFilters"; payload: string }
   | { type: "hidden"; payload: null }
@@ -120,17 +125,15 @@ function ScheduleProvider({ children }: { children: React.ReactNode }) {
     reducer,
     initialState
   );
-  const { data: items } = useQuery({
-    ...scheduleQueries.getAllScheduleItemsOpts(),
-    throwOnError: (e) => {
-      return e.message === "No items found" ? false : true;
-    },
-  });
+  const { data: items } = useSuspenseQuery(
+    scheduleQueries.getAllScheduleItemsOpts()
+  );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
   });
+
   const { mutate: updateItemDb } = useMutation({
     ...scheduleMutations.updateScheduleItemMutationOptions,
     onSuccess: () => {
@@ -143,6 +146,7 @@ function ScheduleProvider({ children }: { children: React.ReactNode }) {
       return queryClient.invalidateQueries({ queryKey: ["scheduleItems"] });
     },
   });
+
   const { mutate: deleteItemsDb } = useMutation({
     ...scheduleMutations.deleteScheduleItemsMutationOptions,
     onSuccess: () => {
