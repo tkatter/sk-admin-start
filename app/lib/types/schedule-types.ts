@@ -35,29 +35,6 @@ export interface AllScheduleItems {
   location: Location;
 }
 
-/**
- * Represents a schedule item after being formatted for display in the UI
- * @interface FormattedScheduleItems
- */
-export interface FormattedScheduleItems {
-  /** Unique identifier for the schedule item */
-  id: string;
-  /** Name/title of the scheduled event */
-  name: string;
-  /** Current status of the event */
-  status: Status;
-  /** Start date of the event */
-  startDate: Date;
-  /** End date of the event */
-  endDate: Date;
-  /** Location details of the event */
-  location: Location | undefined;
-}
-
-/**
- * Represents a new schedule item to be created
- * @interface ScheduleItem
- */
 // export interface ScheduleItem {
 //   /** Name/title of the scheduled event */
 //   name: string
@@ -116,7 +93,7 @@ export const locationSchema = z.object({
   city: z.string().trim().toLowerCase(),
   state: z.string().trim().toUpperCase(),
   zip: z.string().trim(),
-  formatted: z.string().nullable(),
+  formatted: z.string().optional(),
 });
 
 export const statusSchema = z.enum([
@@ -165,5 +142,12 @@ export type Location = z.infer<typeof locationSchema>;
 export type Status = z.infer<typeof statusSchema>;
 export type EventType = z.infer<typeof eventTypeSchema>;
 
+/**
+ * Represents a new schedule item to be created
+ */
 export type NewScheduleItem = z.infer<typeof createScheduleItemSchema>;
+
+/**
+ * Represents an existing schedule item from the db
+ */
 export type ScheduleItem = z.infer<typeof scheduleItemSchema>;

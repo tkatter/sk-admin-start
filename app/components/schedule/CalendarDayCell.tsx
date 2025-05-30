@@ -116,7 +116,7 @@ function EventHoverCard({ event }: { event: ScheduleItem }) {
     <>
       <ul>
         <li className="mb-2 capitalize">{event.name}</li>
-        {mapUrl !== null && formattedAddress !== null && (
+        {mapUrl && formattedAddress && (
           <li className="text-sm">
             <Link
               to={mapUrl.toString()}

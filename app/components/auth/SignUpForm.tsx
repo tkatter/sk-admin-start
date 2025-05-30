@@ -1,4 +1,3 @@
-import type { AnyFieldApi } from "@tanstack/react-form";
 import type { SignUpFormSchema } from "~/lib/tanstack/form-utils";
 
 import { toast } from "sonner";
@@ -20,7 +19,7 @@ import { Label } from "~/components/ui/label";
 import { LoadingSpinnerMini } from "~/components/ui/LoadingSpinner";
 import { authClient } from "~/lib/auth/auth-client";
 import { formOpts } from "~/lib/tanstack/form-utils";
-import { log } from "~/lib/utils";
+import FieldInfo from "../form/FieldInfo";
 
 const signUp = async (data: SignUpFormSchema) => {
   const { error, data: res } = await authClient.signUp.email({
@@ -33,19 +32,6 @@ const signUp = async (data: SignUpFormSchema) => {
 
   return res;
 };
-
-function FieldInfo({ field }: { field: AnyFieldApi }) {
-  return (
-    <>
-      {field.state.meta.isTouched && !field.state.meta.isValid ? (
-        <p className="text-destructive-foreground">
-          {field.state.meta.errors.map((err) => err.message).join(",")}
-        </p>
-      ) : null}
-      {/* {field.state.meta.isValidating ? "Validating..." : null} */}
-    </>
-  );
-}
 
 function SignUpForm() {
   const queryClient = useQueryClient();

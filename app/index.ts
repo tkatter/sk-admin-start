@@ -1,7 +1,10 @@
 import { db } from "./lib/db/db";
 import { scheduleTable } from "./lib/db/schema/schedule";
-import type { NewScheduleItem, ScheduleItem } from "./lib/types/schedule-types";
-import { createScheduleItemSchema } from "./lib/types/schedule-types";
+import type { NewScheduleItem } from "./lib/types/schedule-types";
+import {
+  createScheduleItemSchema,
+  statusSchema,
+} from "./lib/types/schedule-types";
 import { log } from "./lib/utils";
 
 // async function getScheduleItems() {
@@ -37,15 +40,18 @@ const newItem: NewScheduleItem = {
     "This is a test item to see how my zod schemas and types are working when adding an item to the database",
 };
 
-createScheduleItem(newItem);
+// createScheduleItem(newItem);
 
-// import { z } from "zod/v4";
+import { z } from "zod/v4";
 
-// const testSchema = z.object({
-//   name: z.string().toLowerCase(),
-//   description: z.string().optional(),
-// });
+const testSchema = z.object({
+  status: statusSchema.default("pending"),
+});
 
-// type Test = z.infer<typeof testSchema>;
+type Test = z.infer<typeof testSchema>;
+
+const testObj: Test = {
+  status: undefined,
+};
 
 // console.log(testSchema.safeParse(testObj));

@@ -48,7 +48,7 @@ function SchedulePage() {
         location: true,
       },
     },
-    debugTable: true,
+    // debugTable: true,
     state: { columnFilters, rowSelection, pagination },
     getRowId: (row) => row.id.toString(),
     onRowSelectionChange: setRowSelection,

@@ -1,9 +1,9 @@
-import { createMiddleware, createServerFn } from "@tanstack/react-start";
+import { createServerFn } from "@tanstack/react-start";
 import type {
   // AllScheduleItems,
   ApiRes,
   ApiResWithData,
-  FormattedScheduleItems,
+  NewScheduleItem,
   ScheduleItem,
   UpdatedScheduleItem,
 } from "~/lib/types/schedule-types";
@@ -48,13 +48,13 @@ export const getAllScheduleItems = async (): Promise<
 
 /**
  * Creates a new schedule item in the database
- * @param {ScheduleItem} newItem - The schedule item data to create
- * @returns {Promise<FormattedScheduleItems>} The newly created schedule item
+ * @param {NewScheduleItem} newItem - The schedule item data to create
+ * @returns {Promise<ScheduleItem>} The newly created schedule item
  * @throws {Error} When the item cannot be saved
  */
 export const addScheduleItem = async (
-  newItem: ScheduleItem
-): Promise<FormattedScheduleItems> => {
+  newItem: NewScheduleItem
+): Promise<ScheduleItem> => {
   try {
     const res = await fetch("/api/v1/schedule", {
       method: "POST",
@@ -66,7 +66,7 @@ export const addScheduleItem = async (
 
     if (!res.ok) throw new Error("Could not save, try again");
 
-    const data: ApiResWithData<FormattedScheduleItems> = await res.json();
+    const data: ApiResWithData<ScheduleItem> = await res.json();
 
     const item = data.data.items;
     return item;

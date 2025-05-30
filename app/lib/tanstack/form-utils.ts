@@ -1,6 +1,10 @@
 import { z } from "zod/v4";
 import { formOptions } from "@tanstack/react-form";
-import { UserSignIn, UserSignUp } from "../types/form-types";
+import { UserSignIn, UserSignUp } from "~/lib/types/form-types";
+import {
+  createScheduleItemSchema,
+  NewScheduleItem,
+} from "../types/schedule-types";
 
 export const signUpFormSchema = z.object({
   name: z.string("Name is required").trim().toLowerCase(),
@@ -42,6 +46,31 @@ export const formOpts = {
       defaultValues: defaultUser,
       validators: {
         onSubmit: signInFormSchema,
+      },
+    });
+  },
+  addScheduleItem: () => {
+    const defaultValues: NewScheduleItem = {
+      name: "",
+      startDate: new Date(Date.now()),
+      endDate: new Date(Date.now()),
+      eventType: "job",
+      status: "pending",
+      location: {
+        address: "",
+        city: "",
+        state: "MN",
+        zip: "",
+      },
+      bidId: undefined,
+      description: undefined,
+      notes: undefined,
+    };
+
+    return formOptions({
+      defaultValues,
+      validators: {
+        onSubmit: createScheduleItemSchema,
       },
     });
   },

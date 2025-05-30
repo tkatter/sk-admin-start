@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import type { ScheduleItem } from "~/lib/types/schedule-types";
+import type { NewScheduleItem, ScheduleItem } from "~/lib/types/schedule-types";
 import { Button } from "~/components/ui/button";
 
 import { Calendar } from "~/components/ui/calendar";
@@ -78,7 +78,7 @@ function AddItemForm() {
 
   const { mutate: addItem } = useMutation({
     mutationKey: ["addScheduleItem"],
-    mutationFn: (newItem: ScheduleItem) => addScheduleItem(newItem),
+    mutationFn: (newItem: NewScheduleItem) => addScheduleItem(newItem),
     onSuccess: () => {
       toast.success("Item added");
       if (closeRef.current) closeRef.current.click();
@@ -93,7 +93,7 @@ function AddItemForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const newItem: ScheduleItem = {
+    const newItem: NewScheduleItem = {
       name: values.name,
       status: values.status,
       startDate: values.dates.from,

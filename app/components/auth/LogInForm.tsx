@@ -1,9 +1,9 @@
-import { AnyFieldApi, useForm } from "@tanstack/react-form";
-import { formOpts, SignInFormSchema } from "~/lib/tanstack/form-utils";
-import { log } from "~/lib/utils";
-import { Input } from "~/components/ui/input";
+import { toast } from "sonner";
+
+import { useForm } from "@tanstack/react-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "~/components/ui/button";
-import { Label } from "~/components/ui/label";
 import {
   Card,
   CardContent,
@@ -12,11 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { LoadingSpinnerMini } from "~/components/ui/LoadingSpinner";
 import { authClient } from "~/lib/auth/auth-client";
-import { LoadingSpinnerMini } from "../ui/LoadingSpinner";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { formOpts, SignInFormSchema } from "~/lib/tanstack/form-utils";
+import FieldInfo from "../form/FieldInfo";
 
 const signIn = async (data: SignInFormSchema) => {
   const { email, password } = data;
@@ -30,19 +31,6 @@ const signIn = async (data: SignInFormSchema) => {
 
   return response;
 };
-
-function FieldInfo({ field }: { field: AnyFieldApi }) {
-  return (
-    <>
-      {field.state.meta.isTouched && !field.state.meta.isValid ? (
-        <p className="text-destructive-foreground">
-          {field.state.meta.errors.map((err) => err.message).join(",")}
-        </p>
-      ) : null}
-      {/* {field.state.meta.isValidating ? "Validating..." : null} */}
-    </>
-  );
-}
 
 function LoginForm() {
   const navigate = useNavigate();

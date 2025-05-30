@@ -1,4 +1,5 @@
 import { PlusCircle } from "lucide-react";
+import AddEventForm from "~/components/schedule/AddEventForm-v2";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -8,7 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import AddItemForm from "~/components/schedule/AddItemForm";
 
 function AddItemDialog() {
   return (
@@ -21,10 +21,10 @@ function AddItemDialog() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Item</DialogTitle>
-          <DialogDescription>Add a new schedule item here.</DialogDescription>
+          <DialogTitle>Add Event</DialogTitle>
+          <DialogDescription>Add a new event here.</DialogDescription>
         </DialogHeader>
-        <AddItemForm />
+        <AddEventForm />
       </DialogContent>
     </Dialog>
   );
