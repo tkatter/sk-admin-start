@@ -7,6 +7,7 @@ export const Route = createFileRoute("/(app)")({
     if (!context.userSession) throw redirect({ to: "/sign-in" });
   },
   // TODO: MAKE GLOBAL ERROR COMPONENT FOR UNAUTHORIZED ACCESS
+  pendingComponent: LoadingSpinner,
   component: RouteComponent,
 });
 

@@ -1,9 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 // import { RadarDash } from "~/components/dashboard/Radar";
 // import { LineDash } from "~/components/dashboard/LineChart";
 // import LogoutButton from "~/components/LogoutButton";
 
 export const Route = createFileRoute("/(app)/")({
+  // beforeLoad: async ({ context }) => {
+  //   if (!context.userSession) throw redirect({ to: "/sign-in" });
+  // },
   component: Home,
 });
 
