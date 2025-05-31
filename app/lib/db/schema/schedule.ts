@@ -2,7 +2,7 @@ import type { BidSelect } from "~/lib/db/schema/bid";
 import type { Location } from "~/lib/types/schedule-types";
 
 import { relations } from "drizzle-orm";
-import { json } from "drizzle-orm/pg-core";
+import { boolean, json } from "drizzle-orm/pg-core";
 import {
   pgEnum,
   pgTable,
@@ -39,6 +39,7 @@ export const scheduleTable = pgTable("schedule", {
   status: statusEnum().notNull().default("pending"),
   eventType: eventTypeEnum("event_type").notNull().default("job"),
 
+  hasLocation: boolean().notNull().default(false),
   location: json("location").$type<Location>(),
 
   description: text(),

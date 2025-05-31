@@ -1,80 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
-import type {
-  // AllScheduleItems,
-  ApiRes,
-  ApiResWithData,
-  NewScheduleItem,
-  ScheduleItem,
-  UpdatedScheduleItem,
+import {
+  createScheduleItemSchema,
+  type ApiRes,
+  type UpdatedScheduleItem,
 } from "~/lib/types/schedule-types";
 import { db } from "../db/db";
 import { asc } from "drizzle-orm";
 import { scheduleTable } from "../db/schema/schedule";
-
-/*
-export const getAllScheduleItems = async (): Promise<
-  Array<FormattedScheduleItems>
-> => {
-  try {
-    const res = await fetch("/api/v1/schedule", {
-      method: "GET",
-    });
-    if (!res.ok && res.statusText === "Not Found")
-      throw new Error("No items found");
-
-    if (!res.ok)
-      throw new Error("Something went wrong loading the schedule items");
-
-    const data: ApiResWithData<Array<AllScheduleItems>> = await res.json();
-    console.log(data);
-
-    const items = data.data.items;
-    const formattedItems = items.map((item) => ({
-      id: item.id.toString(),
-      name: item.name,
-      status: item.status,
-      startDate: item.startDate,
-      endDate: item.endDate,
-      location: item.location,
-    }));
-
-    return formattedItems;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
-*/
-
-/**
- * Creates a new schedule item in the database
- * @param {NewScheduleItem} newItem - The schedule item data to create
- * @returns {Promise<ScheduleItem>} The newly created schedule item
- * @throws {Error} When the item cannot be saved
- */
-export const addScheduleItem = async (
-  newItem: NewScheduleItem
-): Promise<ScheduleItem> => {
-  try {
-    const res = await fetch("/api/v1/schedule", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newItem),
-    });
-
-    if (!res.ok) throw new Error("Could not save, try again");
-
-    const data: ApiResWithData<ScheduleItem> = await res.json();
-
-    const item = data.data.items;
-    return item;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
+import { authMiddleware } from "./auth.api";
 
 /**
  * Updates an existing schedule item in the database
@@ -129,13 +62,49 @@ export const deleteScheduleItems = async (
   }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 export const getAllScheduleItems = createServerFn({
   method: "GET",
   response: "data",
-}).handler(async () => {
-  const res = await db.query.scheduleTable.findMany({
-    orderBy: [asc(scheduleTable.startDate)],
+})
+  .middleware([authMiddleware])
+  .handler(async () => {
+    const res = await db.query.scheduleTable.findMany({
+      orderBy: [asc(scheduleTable.startDate)],
+    });
+
+    return res;
   });
 
-  return res;
-});
+/**
+ * Creates a new schedule item in the database
+ * @param {NewScheduleItem} newItem - The schedule item data to create
+ * @returns {Promise<ScheduleItem>} The newly created schedule item
+ * @throws {Error} When the item cannot be saved
+ */
+export const addScheduleItem = createServerFn({
+  method: "POST",
+  response: "data",
+})
+  .middleware([authMiddleware])
+  .validator(createScheduleItemSchema)
+  .handler(async ({ data }) => {
+    const insertData = {
+      ...data,
+      startDate:
+        typeof data.startDate === "string"
+          ? new Date(data.startDate)
+          : data.startDate,
+      endDate:
+        typeof data.endDate === "string"
+          ? new Date(data.endDate)
+          : data.endDate,
+    };
+    const res = await db.insert(scheduleTable).values(insertData).returning();
+    return res;
+  });

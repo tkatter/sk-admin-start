@@ -118,6 +118,7 @@ export const scheduleItemSchema = z.object({
   endDate: z.date(),
   status: statusSchema,
   eventType: eventTypeSchema,
+  hasLocation: z.boolean(),
   location: locationSchema.nullable(),
   description: z.string().nullable(),
   notes: z.string().nullable(),
@@ -126,17 +127,36 @@ export const scheduleItemSchema = z.object({
   updatedAt: z.date(),
 });
 
-export const createScheduleItemSchema = z.object({
-  name: z.string().max(255).trim().toLowerCase(),
-  startDate: z.date(),
-  endDate: z.date(),
-  status: statusSchema,
-  eventType: eventTypeSchema,
-  location: locationSchema.optional(),
-  description: z.string().trim().toLowerCase().optional(),
-  notes: z.string().trim().toLowerCase().optional(),
-  bidId: z.string().trim().toLowerCase().optional(),
-});
+export const createScheduleItemSchema = z
+  .object({
+    name: z
+      .string()
+      .min(3, "Name must be at least 3 characters")
+      .max(255)
+      .trim()
+      .toLowerCase(),
+    // startDate: z.coerce.date(),
+    // endDate: z.coerce.date(),
+    startDate: z
+      .date()
+      .or(z.string())
+      .overwrite((val) => new Date(val)),
+    endDate: z
+      .date()
+      .or(z.string())
+      .overwrite((val) => new Date(val)),
+    status: statusSchema,
+    eventType: eventTypeSchema,
+    hasLocation: z.boolean(),
+    location: locationSchema.nullable(),
+    description: z.string().trim().toLowerCase().optional(),
+    notes: z.string().trim().toLowerCase().optional(),
+    bidId: z.string().trim().toLowerCase().optional(),
+  })
+  .refine((schema) => !schema.hasLocation || !!schema.location, {
+    error: "Location is required when hasLocation is true",
+    path: ["location"],
+  });
 
 export type Location = z.infer<typeof locationSchema>;
 export type Status = z.infer<typeof statusSchema>;

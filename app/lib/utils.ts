@@ -62,7 +62,7 @@ export const formatCurrency = () => {};
  * - When both state and zip are present, they are combined with a space
  */
 export const formatLocation = (location: Location | null) => {
-  if (!location) return "";
+  if (!location) return undefined;
   if (location.formatted) return location.formatted;
 
   const parts = [

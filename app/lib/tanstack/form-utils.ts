@@ -52,14 +52,15 @@ export const formOpts = {
   addScheduleItem: () => {
     const defaultValues: NewScheduleItem = {
       name: "",
-      startDate: new Date(Date.now()),
-      endDate: new Date(Date.now()),
+      startDate: "",
+      endDate: "",
       eventType: "job",
       status: "pending",
+      hasLocation: false,
       location: {
         address: "",
         city: "",
-        state: "MN",
+        state: "mn",
         zip: "",
       },
       bidId: undefined,
@@ -70,7 +71,8 @@ export const formOpts = {
     return formOptions({
       defaultValues,
       validators: {
-        onSubmit: createScheduleItemSchema,
+        onChangeAsyncDebounceMs: 500,
+        onChangeAsync: createScheduleItemSchema,
       },
     });
   },

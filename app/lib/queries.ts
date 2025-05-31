@@ -1,11 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { getUserSession } from "~/lib/serverFns/auth.api";
-import type {
-  AllScheduleItems,
-  ApiResWithData,
-  FormattedScheduleItems,
-  UpdatedScheduleItem,
-} from "~/lib/types/schedule-types";
+import type { UpdatedScheduleItem } from "~/lib/types/schedule-types";
 import {
   deleteScheduleItems,
   getAllScheduleItems,

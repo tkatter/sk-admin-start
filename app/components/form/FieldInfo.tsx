@@ -1,10 +1,16 @@
 import { AnyFieldApi } from "@tanstack/react-form";
 
-function FieldInfo({ field }: { field: AnyFieldApi }) {
+function FieldInfo({
+  field,
+  className = "",
+}: {
+  field: AnyFieldApi;
+  className?: string;
+}) {
   return (
     <>
       {field.state.meta.isTouched && !field.state.meta.isValid ? (
-        <p className="text-destructive-foreground">
+        <p className={`text-destructive-foreground ${className}`}>
           {field.state.meta.errors.map((err) => err.message).join(",")}
         </p>
       ) : null}

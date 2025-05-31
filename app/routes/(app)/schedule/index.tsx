@@ -6,7 +6,9 @@ import { ScheduleProvider } from "~/context/ScheduleContext";
 
 export const Route = createFileRoute("/(app)/schedule/")({
   loader: async ({ context: { queryClient } }) => {
-    await queryClient.prefetchQuery(scheduleQueries.getAllScheduleItemsOpts());
+    await queryClient.ensureQueryData(
+      scheduleQueries.getAllScheduleItemsOpts()
+    );
   },
 
   pendingComponent: LoadingSpinner,
