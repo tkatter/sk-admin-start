@@ -31,7 +31,6 @@ interface ScheduleContextType extends InitialStateType {
   pagination: PaginationState;
   setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
   updateDbFromLocal: (itemId: string, columnId: string, value: string) => void;
-  deleteItemsDb: UseMutateFunction<void, Error, Array<number>, unknown>;
 }
 
 /**
@@ -147,20 +146,6 @@ function ScheduleProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
-  const { mutate: deleteItemsDb } = useMutation({
-    ...scheduleMutations.deleteScheduleItemsMutationOptions,
-    onSuccess: () => {
-      toast.success("Items deleted");
-    },
-    onError: (err) => {
-      toast.error(`${err.message}`);
-    },
-    onSettled: () => {
-      setRowSelection({});
-      return queryClient.invalidateQueries({ queryKey: ["scheduleItems"] });
-    },
-  });
-
   // Keep local table data state in-sync with db data
   useEffect(() => {
     if (items) dispatch({ type: "syncDbToTable", payload: items });
@@ -199,7 +184,6 @@ function ScheduleProvider({ children }: { children: React.ReactNode }) {
         setPagination,
         dispatch,
         updateDbFromLocal,
-        deleteItemsDb,
       }}
     >
       {children}

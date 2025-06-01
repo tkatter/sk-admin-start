@@ -1,52 +1,26 @@
-import type { CheckedState } from "@radix-ui/react-checkbox";
-import type { Row, Table } from "@tanstack/react-table";
-import type { ScheduleItem, Status } from "~/lib/types/schedule-types";
+import type {
+  EventType,
+  Location,
+  ScheduleItem,
+  Status,
+} from "~/lib/types/schedule-types";
 import type { HeaderCellProps } from "~/components/cells/HeaderCell";
 
 import { Link } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
-import DatePickerCell from "~/components/cells/DatePickerCell";
-import EditableCell from "~/components/cells/EditableCell";
 import HeaderCell from "~/components/cells/HeaderCell";
+import RowCell from "~/components/cells/RowCell";
 import { Badge } from "~/components/ui/badge";
-import { Checkbox } from "~/components/ui/checkbox";
-import { formatLocation, getMapsUrl } from "~/lib/utils";
+import { getMapsUrl } from "~/lib/utils";
 
 const columnHelper = createColumnHelper<ScheduleItem>();
 
 export const columns = [
-  {
-    id: "select-col",
-    header: ({ table }: { table: Table<ScheduleItem> }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          className="size-5 p-0 m-0"
-          checked={table.getIsAllRowsSelected()}
-          onCheckedChange={(e: CheckedState) => {
-            if (e === "indeterminate") return;
-            table.toggleAllRowsSelected(e);
-          }}
-        />
-      </div>
-    ),
-    cell: ({ row }: { row: Row<ScheduleItem> }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          className="size-5 p-0 m-0 "
-          checked={row.getIsSelected()}
-          disabled={!row.getCanSelect()}
-          onCheckedChange={row.getToggleSelectedHandler()}
-        />
-      </div>
-    ),
-    // enableResizing: false,
-    size: 30,
-  },
   columnHelper.accessor("id", {
-    // header: (props) => {
-    //   const newProps: HeaderCellProps<string> = { ...props, headerValue: "ID" };
-    //   return HeaderCell<string>(newProps);
-    // },
+    header: (props) => {
+      const newProps: HeaderCellProps<number> = { ...props, headerValue: "ID" };
+      return HeaderCell<number>(newProps);
+    },
     cell: (props) => <p>{props.getValue()}</p>,
     enableHiding: true,
     meta: { hidden: true },
@@ -59,7 +33,7 @@ export const columns = [
       };
       return HeaderCell<string>(newProps);
     },
-    cell: EditableCell,
+    cell: RowCell,
     enableColumnFilter: true,
     filterFn: "includesString",
     enableSorting: false,
@@ -72,7 +46,13 @@ export const columns = [
       };
       return HeaderCell<Date>(newProps);
     },
-    cell: DatePickerCell,
+    cell: (props) => {
+      const newProps = {
+        ...props,
+        isDate: true,
+      };
+      return RowCell(newProps);
+    },
   }),
   columnHelper.accessor("endDate", {
     header: (props) => {
@@ -82,7 +62,13 @@ export const columns = [
       };
       return HeaderCell<Date>(newProps);
     },
-    cell: DatePickerCell,
+    cell: (props) => {
+      const newProps = {
+        ...props,
+        isDate: true,
+      };
+      return RowCell(newProps);
+    },
   }),
   columnHelper.accessor("status", {
     header: (props) => {
@@ -92,9 +78,8 @@ export const columns = [
       };
       return HeaderCell<Status>(newProps);
     },
-    // cell: DropDownCell,
     cell: (props) => (
-      <div className="flex items-center justify-center capitalize">
+      <div className="px-2 flex items-center justify-center capitalize">
         <Badge>{props.getValue()}</Badge>
       </div>
     ),
@@ -102,29 +87,67 @@ export const columns = [
     filterFn: "equalsString",
     enableSorting: false,
   }),
-  columnHelper.accessor((row) => formatLocation(row.location), {
-    id: "location",
-    header: "Location",
+  columnHelper.accessor("eventType", {
+    header: (props) => {
+      const newProps: HeaderCellProps<EventType> = {
+        ...props,
+        headerValue: "Type",
+      };
+      return HeaderCell<EventType>(newProps);
+    },
+    cell: (props) => (
+      <div className="px-2 flex items-center justify-center capitalize">
+        <Badge>{props.getValue()}</Badge>
+      </div>
+    ),
+    enableColumnFilter: true,
+    filterFn: "equalsString",
+    enableSorting: false,
+  }),
+  columnHelper.accessor("location", {
+    header: (props) => {
+      const newProps: HeaderCellProps<Location | null> = {
+        ...props,
+        headerValue: "Location",
+      };
+      return HeaderCell<Location | null>(newProps);
+    },
     cell: (props) => {
-      const location = props.row.original.location;
-      if (!location)
-        return (
-          <div className="px-4">
-            <div>{formatLocation(location)}</div>
-          </div>
-        );
-
-      const [mapsUrl, formattedAddress] = getMapsUrl(location);
+      const hasLocation = props.row.getValue("hasLocation");
+      const location = props.getValue();
+      if (!hasLocation || location === null) return null;
+      const [mapsUrl] = getMapsUrl(location);
 
       return (
-        <div className="px-4">
-          <Link to={mapsUrl.toString()} target="_blank" className="capitalize">
-            {formattedAddress}
+        <div className="px-2 w-full flex items-center justify-center text-sm">
+          <Link to={mapsUrl.toString()} target="_blank">
+            <p className="capitalize">{`${location.address} ${location.city}, ${location.state} ${location.zip}`}</p>
           </Link>
         </div>
       );
     },
-    filterFn: "includesString",
+    // filterFn: (row, columnId, filterValue) =>
+    //   !filterValue
+    //     ? true
+    //     : row.getValue<Location>(columnId) === null
+    //     ? false
+    //     : Object.values(row.getValue<Location>(columnId)).some((el) =>
+    //         el.toLowerCase().includes(filterValue)
+    //       ),
+
     enableColumnFilter: true,
+    enableSorting: false,
+  }),
+  columnHelper.accessor("hasLocation", {
+    header: (props) => {
+      const newProps: HeaderCellProps<boolean> = {
+        ...props,
+        headerValue: "hasLocation",
+      };
+      return HeaderCell<boolean>(newProps);
+    },
+    cell: (props) => <p>{props.getValue()}</p>,
+    enableHiding: true,
+    meta: { hidden: true },
   }),
 ];

@@ -1,13 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
   createScheduleItemSchema,
+  ScheduleItem,
   type ApiRes,
   type UpdatedScheduleItem,
 } from "~/lib/types/schedule-types";
 import { db } from "../db/db";
-import { asc } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { scheduleTable } from "../db/schema/schedule";
 import { authMiddleware } from "./auth.api";
+import { setResponseStatus } from "@tanstack/react-start/server";
 
 /**
  * Updates an existing schedule item in the database
@@ -107,4 +109,22 @@ export const addScheduleItem = createServerFn({
     };
     const res = await db.insert(scheduleTable).values(insertData).returning();
     return res;
+  });
+
+export const deleteScheduleItem = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((eventId: unknown): ScheduleItem["id"] => {
+    if (typeof eventId !== "number" || !eventId)
+      throw new Error("Invalid EventId");
+
+    return eventId as ScheduleItem["id"];
+  })
+  .handler(async ({ data }) => {
+    const res = await db
+      .delete(scheduleTable)
+      .where(eq(scheduleTable.id, data));
+
+    if (!res) throw new Error("Something went wrong deleting the Event");
+
+    setResponseStatus(202);
   });

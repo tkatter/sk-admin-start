@@ -14,6 +14,17 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useSchedule } from "~/context/ScheduleContext";
+import { EventType, Status } from "~/lib/types/schedule-types";
+
+const statusOpts: Status[] = [
+  "pending",
+  "in-progress",
+  "confirmed",
+  "cancelled",
+  "completed",
+];
+
+const eventOpts: EventType[] = ["job", "appointment", "event", "meeting"];
 
 export function FilterInput() {
   const { columnFilters, dispatch } = useSchedule();
@@ -24,7 +35,7 @@ export function FilterInput() {
     dispatch({ type: "filterChange", payload: { id, value } });
 
   return (
-    <div className="">
+    <div className="flex items-center">
       <Input
         className="bg-slate-800/40 min-w-20 max-w-2xs"
         value={itemName}
@@ -37,14 +48,17 @@ export function FilterInput() {
 
 export function FilterPopover() {
   const { columnFilters, dispatch } = useSchedule();
-  const optValue =
+  const statusValue =
     columnFilters.find((filter) => filter.id === "status")?.value || "";
+  const eventValue =
+    columnFilters.find((filter) => filter.id === "eventType")?.value || "";
 
   const onFilterChange = (id: string, value: string) =>
     dispatch({ type: "filterChange", payload: { id, value } });
 
   const handleClearFilters = () => {
     dispatch({ type: "clearFilters", payload: "status" });
+    dispatch({ type: "clearFilters", payload: "eventType" });
   };
   return (
     <Popover>
@@ -54,7 +68,7 @@ export function FilterPopover() {
           <p className="max-sm:hidden">Filter</p>
         </Button>
       </PopoverTrigger>
-      {optValue && (
+      {(statusValue || eventValue) && (
         <Button
           variant={"ghost"}
           className="hover:bg-slate-800/80"
@@ -64,26 +78,40 @@ export function FilterPopover() {
         </Button>
       )}
       <PopoverContent className="shadow-lg">
-        <div className="grid grid-cols-2 items-center text-base ">
+        <div className="grid grid-cols-2 items-center text-base gap-y-2">
           <p>Status</p>
           <div className="">
             <Select
-              value={optValue}
+              value={statusValue}
               onValueChange={(e) => onFilterChange("status", e)}
             >
               <SelectTrigger className="cursor-pointer w-full">
                 <SelectValue placeholder="Status" className="" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="pending" className="cursor-pointer">
-                  Pending
-                </SelectItem>
-                <SelectItem value="confirmed" className="cursor-pointer">
-                  Confirmed
-                </SelectItem>
-                <SelectItem value="in-progress" className="cursor-pointer">
-                  In-progress
-                </SelectItem>
+                {statusOpts.map((el) => (
+                  <SelectItem value={el} key={el} className="cursor-pointer">
+                    <p className="capitalize">{el}</p>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <p>Event</p>
+          <div className="">
+            <Select
+              value={eventValue}
+              onValueChange={(e) => onFilterChange("eventType", e)}
+            >
+              <SelectTrigger className="cursor-pointer w-full">
+                <SelectValue placeholder="Event" className="" />
+              </SelectTrigger>
+              <SelectContent>
+                {eventOpts.map((el) => (
+                  <SelectItem value={el} key={el} className="cursor-pointer">
+                    <p className="capitalize">{el}</p>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

@@ -18,8 +18,8 @@ function AddEventForm() {
   const addScheduleItem = useServerFn(addScheduleItemServerFn);
 
   const { mutate: addEvent, isPending } = useMutation({
-    mutationFn: (newEvent: NewScheduleItem) =>
-      addScheduleItem({ data: newEvent }),
+    mutationFn: async (newEvent: NewScheduleItem) =>
+      await addScheduleItem({ data: newEvent }),
     onSuccess: () => {
       form.reset();
       toast.success("Event added!");

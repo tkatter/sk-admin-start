@@ -12,6 +12,31 @@ import {
 } from "~/components/ui/table";
 import { useSchedule } from "~/context/ScheduleContext";
 import { columns } from "~/lib/schedule-columns";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "~/components/ui/context-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "~/components/ui/button";
+import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { deleteScheduleItem } from "~/lib/serverFns/schedule.api";
+import { LoadingSpinnerMini } from "~/components/ui/LoadingSpinner";
+import { log } from "~/lib/utils";
 
 /**
  * Props interface for the ScheduleTable component
@@ -29,6 +54,40 @@ export interface ScheduleTableProps {
  */
 function ScheduleTable({ table }: ScheduleTableProps) {
   const { data } = useSchedule();
+  const queryClient = useQueryClient();
+  const alertRef = useRef<HTMLButtonElement>(null);
+  const actionBtnRef = useRef<HTMLButtonElement>(null);
+  const [deleteItem, setDeleteItem] = useState<ScheduleItem["id"] | null>(null);
+  const deleteEvent = useServerFn(deleteScheduleItem);
+
+  const {
+    data: mutationData,
+    mutate: deleteMutation,
+    isPending,
+  } = useMutation({
+    mutationFn: async (eventId: ScheduleItem["id"]) =>
+      await deleteEvent({ data: eventId }),
+    onSuccess: () => {
+      toast.success("Event deleted.");
+      if (actionBtnRef.current) actionBtnRef.current.click();
+      return queryClient.invalidateQueries({ queryKey: ["scheduleItems"] });
+    },
+    onError: ({ message }) => {
+      toast.error(message);
+    },
+    onSettled: () => setDeleteItem(null),
+  });
+
+  useEffect(() => {
+    log(mutationData);
+  }, [mutationData]);
+
+  const handleDelete = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    if (!deleteItem) return toast.error("Something went wrong, try again.");
+    deleteMutation(deleteItem);
+  };
+
   return (
     <div className="border-2 rounded-lg bg-slate-900/40 shadow-lg">
       <Table
@@ -60,20 +119,38 @@ function ScheduleTable({ table }: ScheduleTableProps) {
         <TableBody>
           {data.length > 0 ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    width={cell.column.getSize()}
-                    className={`border-r-1 text-slate-200 text-base px-0`}
+              <ContextMenu key={row.id}>
+                <ContextMenuTrigger asChild>
+                  <TableRow data-state={row.getIsSelected() && "selected"}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        width={cell.column.getSize()}
+                        className={`border-r-1 text-slate-200 text-base px-0`}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent>
+                  <ContextMenuItem
+                    variant="destructive"
+                    className="text-destructive-foreground font-medium cursor-pointer"
+                    onClick={() => {
+                      if (alertRef.current) {
+                        setDeleteItem(Number(row.id));
+                        return alertRef.current.click();
+                      }
+                    }}
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
+                    Delete
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
             ))
           ) : (
             <TableRow>
@@ -84,6 +161,31 @@ function ScheduleTable({ table }: ScheduleTableProps) {
           )}
         </TableBody>
       </Table>
+      <AlertDialog>
+        <AlertDialogTrigger className="hidden" ref={alertRef} />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This event will be permanently
+              deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteItem(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <Button
+              variant={"outline"}
+              className="text-destructive-foreground border-destructive-foreground focus-visible:ring-destructive/70 focus-visible:border-destructive hover:bg-destructive/90"
+              onClick={(e) => handleDelete(e)}
+            >
+              {isPending ? <LoadingSpinnerMini /> : "Delete"}
+            </Button>
+            <AlertDialogAction className="hidden" ref={actionBtnRef} />
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

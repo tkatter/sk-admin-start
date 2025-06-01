@@ -1,5 +1,6 @@
 import { Eye } from "lucide-react";
 import {
+  FilterFn,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -8,7 +9,6 @@ import {
 } from "@tanstack/react-table";
 import AddItemDialog from "~/components/schedule/AddItemDialog";
 import Calendar from "~/components/schedule/Calendar";
-import DeleteSelectedButton from "~/components/schedule/DeleteSelectedButton";
 import ScheduleTable from "~/components/schedule/ScheduleTable";
 import { FilterInput, FilterPopover } from "~/components/schedule/TableFilters";
 import TablePagination from "~/components/schedule/TablePagination";
@@ -16,6 +16,8 @@ import TableSize from "~/components/schedule/TableSize";
 import { useSchedule } from "~/context/ScheduleContext";
 import { Button } from "~/components/ui/button";
 import { columns } from "~/lib/schedule-columns";
+import { Suspense } from "react";
+import { LoadingSpinnerMini } from "~/components/ui/LoadingSpinner";
 
 export type Filter = {
   id: string;
@@ -45,7 +47,13 @@ function SchedulePage() {
         startDate: true,
         endDate: true,
         status: true,
+        eventType: true,
         location: true,
+        // address: false,
+        // city: false,
+        // state: false,
+        // zip: false,
+        hasLocation: false,
       },
     },
     // debugTable: true,
@@ -66,7 +74,6 @@ function SchedulePage() {
     table.resetColumnVisibility();
   }
 
-  const isItemsSelected = Object.keys(rowSelection).length > 0 ? true : false;
   const numRows = data.length;
 
   return (
@@ -85,7 +92,6 @@ function SchedulePage() {
             )}
           </div>
           <div className="flex items-center max-sm:gap-2 gap-4">
-            {isItemsSelected && <DeleteSelectedButton />}
             <AddItemDialog />
             <TableSize table={table} />
           </div>
