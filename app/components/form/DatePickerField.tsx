@@ -1,9 +1,9 @@
 import { cn } from "~/lib/utils";
-import { Button } from "../ui/button";
+import { Button } from "~/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useFieldContext } from "../../hooks/appForm";
 import { CalendarIcon } from "lucide-react";
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -17,7 +17,6 @@ function DatePickerField({
   label?: string;
 }) {
   const field = useFieldContext<Date>();
-
   const [date, setDate] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
@@ -30,7 +29,7 @@ function DatePickerField({
 
   function handleChange(dateRange: DateRange | undefined) {
     setDate(dateRange);
-
+    // console.log("click");
     // field.handleChange(dateRange?.from ? dateRange.from.toISOString() : "");
     field.form.setFieldValue("startDate", dateRange?.from);
     field.form.setFieldValue("endDate", dateRange?.to);
@@ -49,7 +48,7 @@ function DatePickerField({
               variant={"outline"}
               className={cn(
                 "justify-start text-left font-normal",
-                !date && "text-muted-foreground"
+                !date && "text-muted-foreground",
               )}
             >
               <CalendarIcon />

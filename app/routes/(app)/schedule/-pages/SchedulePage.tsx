@@ -1,6 +1,5 @@
 import { Eye } from "lucide-react";
 import {
-  FilterFn,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -16,8 +15,6 @@ import TableSize from "~/components/schedule/TableSize";
 import { useSchedule } from "~/context/ScheduleContext";
 import { Button } from "~/components/ui/button";
 import { columns } from "~/lib/schedule-columns";
-import { Suspense } from "react";
-import { LoadingSpinnerMini } from "~/components/ui/LoadingSpinner";
 
 export type Filter = {
   id: string;

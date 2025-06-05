@@ -12,6 +12,7 @@ import {
   type NewScheduleItem,
 } from "~/lib/types/schedule-types";
 import { useServerFn } from "@tanstack/react-start";
+import { Button } from "../ui/button";
 
 function AddEventForm() {
   const queryClient = useQueryClient();
@@ -278,7 +279,14 @@ function AddEventForm() {
             {!isPending ? "Submit" : <LoadingSpinnerMini />}
           </form.SubmitButton>
         </form.AppForm>
+        <form.Subscribe
+          selector={(state) => state.values}
+          children={(values) => (
+            <Button onClick={() => console.log(values)}>Debug</Button>
+          )}
+        />
       </form>
+      <div></div>
     </>
   );
 }
