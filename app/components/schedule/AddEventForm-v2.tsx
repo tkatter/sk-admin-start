@@ -122,7 +122,7 @@ function AddEventForm() {
           }}
           children={(field) => (
             <div>
-              <field.DatePickerField label="Dates" className="w-full" />
+              <field.DatePickerFieldV2 label="Dates" className="w-full" />
               <FieldInfo field={field} className="mt-1" />
             </div>
           )}
