@@ -1,7 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { AlertCircleIcon } from "lucide-react";
-import { P } from "node_modules/better-auth/dist/shared/better-auth.Cl08k4BO";
 import { z } from "zod/v4";
 import FieldInfo from "~/components/form/FieldInfo";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
@@ -29,7 +28,7 @@ const formSchema = z.object({
     .min(8, "Password must be > 8 characters")
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-      "Password must contain uppercase, lowercase, number, and special character"
+      "Password must contain uppercase, lowercase, number, and special character",
     ),
 });
 

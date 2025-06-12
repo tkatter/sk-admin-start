@@ -22,6 +22,7 @@ export function createRouter() {
     defaultPendingComponent: LoadingSpinner,
   });
 
+  log("Router created with routeTree");
   return router;
 }
 
