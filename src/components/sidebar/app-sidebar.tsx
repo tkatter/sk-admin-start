@@ -54,12 +54,12 @@ const data = {
     },
     {
       title: "Bids",
-      url: "#",
+      url: "/bids",
       icon: WalletCards,
       items: [
         {
           title: "In Progress",
-          url: "#",
+          url: "/bids",
         },
         {
           title: "Submitted",

@@ -16,6 +16,7 @@ import { Route as appIndexRouteImport } from './routes/(app)/index'
 import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as appScheduleIndexRouteImport } from './routes/(app)/schedule/index'
+import { Route as appBidsIndexRouteImport } from './routes/(app)/bids/index'
 import { Route as appSchedulePastRouteImport } from './routes/(app)/schedule/past'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth.$'
 
@@ -45,6 +46,11 @@ const appScheduleIndexRoute = appScheduleIndexRouteImport.update({
   path: '/schedule/',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appBidsIndexRoute = appBidsIndexRouteImport.update({
+  id: '/bids/',
+  path: '/bids/',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appSchedulePastRoute = appSchedulePastRouteImport.update({
   id: '/schedule/past',
   path: '/schedule/past',
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof authSignInRoute
   '/sign-up': typeof authSignUpRoute
   '/schedule/past': typeof appSchedulePastRoute
+  '/bids': typeof appBidsIndexRoute
   '/schedule': typeof appScheduleIndexRoute
 }
 export interface FileRoutesByTo {
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof authSignUpRoute
   '/': typeof appIndexRoute
   '/schedule/past': typeof appSchedulePastRoute
+  '/bids': typeof appBidsIndexRoute
   '/schedule': typeof appScheduleIndexRoute
 }
 export interface FileRoutesById {
@@ -77,13 +85,20 @@ export interface FileRoutesById {
   '/(auth)/sign-up': typeof authSignUpRoute
   '/(app)/': typeof appIndexRoute
   '/(app)/schedule/past': typeof appSchedulePastRoute
+  '/(app)/bids/': typeof appBidsIndexRoute
   '/(app)/schedule/': typeof appScheduleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in' | '/sign-up' | '/schedule/past' | '/schedule'
+  fullPaths:
+    | '/'
+    | '/sign-in'
+    | '/sign-up'
+    | '/schedule/past'
+    | '/bids'
+    | '/schedule'
   fileRoutesByTo: FileRoutesByTo
-  to: '/sign-in' | '/sign-up' | '/' | '/schedule/past' | '/schedule'
+  to: '/sign-in' | '/sign-up' | '/' | '/schedule/past' | '/bids' | '/schedule'
   id:
     | '__root__'
     | '/(app)'
@@ -91,6 +106,7 @@ export interface FileRouteTypes {
     | '/(auth)/sign-up'
     | '/(app)/'
     | '/(app)/schedule/past'
+    | '/(app)/bids/'
     | '/(app)/schedule/'
   fileRoutesById: FileRoutesById
 }
@@ -158,6 +174,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appScheduleIndexRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/bids/': {
+      id: '/(app)/bids/'
+      path: '/bids'
+      fullPath: '/bids'
+      preLoaderRoute: typeof appBidsIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/schedule/past': {
       id: '/(app)/schedule/past'
       path: '/schedule/past'
@@ -182,12 +205,14 @@ declare module '@tanstack/react-start/server' {
 interface appRouteRouteChildren {
   appIndexRoute: typeof appIndexRoute
   appSchedulePastRoute: typeof appSchedulePastRoute
+  appBidsIndexRoute: typeof appBidsIndexRoute
   appScheduleIndexRoute: typeof appScheduleIndexRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appIndexRoute: appIndexRoute,
   appSchedulePastRoute: appSchedulePastRoute,
+  appBidsIndexRoute: appBidsIndexRoute,
   appScheduleIndexRoute: appScheduleIndexRoute,
 }
 
