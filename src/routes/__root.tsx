@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import type { ReactNode } from "react";
 import {
   Outlet,
@@ -10,7 +11,7 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { authQueries } from "~/lib/queries";
 
-import appCss from "~/styles/app.css?url";
+import appCss from "~/styles.css?url";
 import { Toaster } from "~/components/ui/sonner";
 
 interface RootContext {

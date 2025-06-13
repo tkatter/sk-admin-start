@@ -23,7 +23,7 @@ interface ScheduleContextType extends InitialStateType {
       {
         type: any;
         payload: any;
-      }
+      },
     ]
   >;
   rowSelection: RowSelectionState | {};
@@ -93,7 +93,7 @@ function reducer(state: typeof initialState, { type, payload }: MYDispatch) {
       return {
         ...state,
         columnFilters: state.columnFilters.filter(
-          (filter) => filter.id !== payload
+          (filter) => filter.id !== payload,
         ),
       };
     case "hidden":
@@ -122,10 +122,10 @@ function ScheduleProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const [{ data, columnFilters, isHidden }, dispatch] = useReducer(
     reducer,
-    initialState
+    initialState,
   );
   const { data: items } = useSuspenseQuery(
-    scheduleQueries.getAllScheduleItemsOpts()
+    scheduleQueries.getAllScheduleItemsOpts(),
   );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [pagination, setPagination] = useState<PaginationState>({
@@ -161,7 +161,7 @@ function ScheduleProvider({ children }: { children: React.ReactNode }) {
   function updateDbFromLocal(
     itemId: string,
     columnId: string,
-    value: string
+    value: string,
   ): void {
     const updatedItem = {
       id: itemId,
